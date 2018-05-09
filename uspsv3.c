@@ -233,19 +233,22 @@ int main(int argc, char *argv[]){
 	char bs[50];
 	int count, lines;
 	lines = 0;
+	int strlen;
+	int x;
+	char buf2[1024];
 	terminator = p1getline(filedesc, buf, 1024);
 	struct Node* newll;
 	while(terminator){
 		count = 0;
-		token = strtok(buf, " ");
-		newll = LList_create(token);
-		token = strtok(NULL, " ");
-		while(token!=NULL){
-			p1strcpy(newll->args[count], token);
-			token = strtok(NULL, " ");
+		x = p1getword(buf, x, buf2);
+		newll = LList_create(buf2);
+		x = 0;
+		while(x!=-1){
+			x = p1getword(buf, x, newll->args[count]);
 			count++;
-
 		}
+		strlen = p1strlen(newll->cmd);
+		newll->cmd[strlen] = '\0';
 		if(lines>0){
 			templl->next = newll;
 			templl = templl->next;

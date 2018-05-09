@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 
 
@@ -26,7 +27,7 @@ struct Node* LList_create(char* cmdx){
 		l->next = NULL;
 		p1strcpy(l->cmd, cmdx);
 		 //chjeck to make sure we don't need to strdup or something here
-		l->id = NULL;
+		l->id;
 		 //not sure
 		return l;
 	}
@@ -77,9 +78,11 @@ int main(int argc, char *argv[]){
     else {
     	filedesc = 0;
     }
-
+    int x;
 	int terminator = 1;
+	int strlen;
 	char buf[1024];
+	char buf2[1024];
 	char *token;
 	struct Node* templl;
 	char bs[50];
@@ -91,16 +94,15 @@ int main(int argc, char *argv[]){
 	lines =0;
 	while(terminator){
 		count = 0;
-		token = strtok(buf, " ");
-		newll = LList_create(token);
-		token = strtok(NULL, " ");
-
-		while(token!=NULL){
-			p1strcpy(newll->args[count], token);
-			token = strtok(NULL, " ");
+		x = p1getword(buf, x, buf2);
+		newll = LList_create(buf2);
+		x = 0;
+		while(x!=-1){
+			x = p1getword(buf, x, newll->args[count]);
 			count++;
-
 		}
+		strlen = p1strlen(newll->cmd);
+		newll->cmd[strlen] = '\0';
 		if(lines>0){
 			templl->next = newll;
 			templl = templl->next;
@@ -123,7 +125,7 @@ int main(int argc, char *argv[]){
 
 	templl = firstll;
 	while(templl!=NULL){
-		wait(templl->id);
+		waitpid(templl->id, NULL, WNOHANG);
 		templl = templl->next;
 	}
 	templl = firstll;

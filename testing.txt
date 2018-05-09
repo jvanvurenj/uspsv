@@ -1,6 +1,6 @@
 ls -a
 echo "Hello World"
-sleep 500
-sleep 300
+sleep 5
+sleep 3
 echo "Hi"
-sleep 100
+sleep 1

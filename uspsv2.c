@@ -118,7 +118,7 @@ void wait_and_exec(char *cmd, char* argv[]){
 		}
 	execvp(cmd, argv);
 	printf("This should not be reached\n");
-	exit(0);
+	exit(errno);
 }
 pid_t fork_and_wait(struct Node *ll){
 	char *cmd = ll->cmd;
@@ -166,19 +166,33 @@ int main(int argc, char *argv[]){
 	char bs[50];
 	int count, lines;
 	lines = 0;
+	int x = 0;
+	char buf2[1024];
+	int strlen;
+	char* nullp = NULL;
 	terminator = p1getline(filedesc, buf, 1024);
 	struct Node* newll;
 	while(terminator){
 		count = 0;
-		token = strtok(buf, " ");
-		newll = LList_create(token);
-		token = strtok(NULL, " ");
+		x = p1getword(buf, x, buf2);
+		newll = LList_create(buf2);
+		x = 0;
+		while(x!=-1){
+			x = p1getword(buf, x, newll->args[count]);
+			count++;
+		}
+		strlen = p1strlen(newll->cmd);
+		newll->cmd[strlen] = '\0';
+		/*token = strtok(NULL, " ");
 		while(token!=NULL){
 			p1strcpy(newll->args[count], token);
+			printf("%c\n", newll->args[0][0]);
 			token = strtok(NULL, " ");
 			count++;
+		*/
+		//}
+		//newll->args[count] = NULL;
 
-		}
 		if(lines>0){
 			templl->next = newll;
 			templl = templl->next;
@@ -187,7 +201,7 @@ int main(int argc, char *argv[]){
 			firstll = newll;
 		}
 		templl=newll;
-		terminator = p1getline(filedesc, buf, 300);
+		terminator = p1getline(filedesc, buf, 1024);
 		lines++;
 	}
 	int exitcode;
